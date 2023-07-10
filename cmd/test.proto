@@ -1,0 +1,42 @@
+syntax="proto3";
+
+package proto.v1;
+
+service TesterService {
+    rpc Test1 (TestRequest1) returns (TestResponse1) {}
+    rpc Test2 (TestRequest2) returns (TestResponse2) {}
+}
+
+message TestRequest1 {
+    string name_test_field = 1;
+    int64 age_test_field = 2;
+    Tester tester_test_field = 3;
+}
+
+message TestResponse1 {
+    string message_test_field = 1;
+    int64 message_age_test_field = 2;
+}
+
+message Tester {
+    string name_test_field = 1;
+    int64 age_test_field = 2;
+    string message_test_field = 3;
+    int64 message_age_test_field = 4;
+}
+
+
+message TestRequest2 {
+    string name_test_field = 1;
+    int64 age_test_field = 2;
+}
+
+message TestResponse2 {
+    string message_test_field = 1;
+    int64 message_age_test_field = 2;
+}
+
+
+
+
+//For a service
