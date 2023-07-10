@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/yoheimuta/go-protoparser/v4"
 )
@@ -176,6 +177,7 @@ func Parse(path string) (Service, error) {
 	//Now we can use the testProto struct to extract only the data we need
 	var service Service
 	service.ServiceName = testProto.ProtoBody[1].ServiceName
+	service.FileName = strings.Split(testProto.Meta.Filename, ".")[0]
 
 	// We need to loop over the field servicebody to determine the amount of RPCs
 	for _, v := range testProto.ProtoBody[1].ServiceBody {
@@ -188,6 +190,7 @@ func Parse(path string) (Service, error) {
 		})
 	}
 
+	//Loop over protoBody to map the request and response messages to the RPCs
 	for _, v := range testProto.ProtoBody {
 		for i, rpc := range service.Rpc {
 			if rpc.Request == v.MessageName {
@@ -225,6 +228,7 @@ func Parse(path string) (Service, error) {
 
 type Service struct {
 	ServiceName string `json:"ServiceName"`
+	FileName    string `json:"FileName"`
 	Rpc         []Rpc  `json:"Rpc"`
 }
 

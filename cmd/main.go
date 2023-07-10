@@ -49,9 +49,9 @@ func run() error {
 		return err
 	}
 
-	/* if err := codegen.CreateRootFolder(parsedProto.ProtoBody[0].ServiceName); err != nil {
+	if err := codegen.CreateRootFolder(parsedProto.ServiceName, parsedProto.FileName); err != nil {
 		return err
-	} */
+	}
 
 	//Generate nessesary files
 	/* 	if err := generator.Generator(parsedProto); err != nil {

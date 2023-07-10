@@ -1,6 +1,6 @@
 package generator
 
-func generateYaml() string {
+func GenerateYaml() string {
 	return `version: v1
 	breaking:
 	  use:
@@ -10,7 +10,7 @@ func generateYaml() string {
 		- DEFAULT`
 }
 
-func generateGenYaml() string {
+func GenerateGenYaml() string {
 	return `version: v1
 	plugins:
 	  - name: go
