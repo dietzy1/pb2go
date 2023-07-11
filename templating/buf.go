@@ -1,5 +1,6 @@
-package generator
+package templating
 
+// there is issues with the tab character in the string builder
 func GenerateYaml() string {
 	return `version: v1
 	breaking:
