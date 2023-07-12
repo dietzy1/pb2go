@@ -1,1 +1,5 @@
 pb2go
+cmd/TesterService
+
+#ignore the file test.proto
+test.proto

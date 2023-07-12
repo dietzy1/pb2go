@@ -1,6 +1,5 @@
 syntax="proto3";
 
-//I probaly want to autogenerate the package for the user
 package test.v1;
 
 service TesterService {

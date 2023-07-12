@@ -3,8 +3,9 @@ package codegen
 import (
 	"fmt"
 	"os"
+	"os/exec"
 
-	"github.com/dietzy1/pb2go/generator"
+	"github.com/dietzy1/pb2go/templating"
 )
 
 //The field serviceName should be used to generate the file names for the generated code
@@ -46,7 +47,7 @@ const (
 	bufGenFileName = "buf.gen.yaml"
 )
 
-func CreateRootFolder(serviceName string, fileName string) error {
+func createRootFolder(serviceName, githubName, fileName string) error {
 	err := os.Mkdir(serviceName, 0755)
 	if err != nil {
 		return fmt.Errorf("error: Unable to create the root folder: %v", err)
@@ -73,7 +74,7 @@ func CreateRootFolder(serviceName string, fileName string) error {
 	}
 
 	//Create the proto folder
-	if err = createProtoFolder(fileName); err != nil {
+	if err = createProtoFolder(fileName, githubName, serviceName); err != nil {
 		return fmt.Errorf("error: Unable to create the %s folder: %v", protoFolderName, err)
 	}
 
@@ -143,7 +144,7 @@ func createDomainFolder() error {
 	return nil
 }
 
-func createProtoFolder(serviceName string) error {
+func createProtoFolder(fileName, githubName, serviceName string) error {
 
 	if err := os.Mkdir(protoFolderName, 0755); err != nil {
 		return fmt.Errorf("error: Unable to create the %s folder: %v", protoFolderName, err)
@@ -161,7 +162,12 @@ func createProtoFolder(serviceName string) error {
 		return fmt.Errorf("error: Unable to create the %s file: %v", bufGenFileName, err)
 	}
 
-	_, err = file.WriteString(generator.GenerateGenYaml())
+	yaml, err := templating.GenerateGenYaml()
+	if err != nil {
+		return fmt.Errorf("error: Unable to generate the %s file: %v", bufGenFileName, err)
+	}
+
+	_, err = file.WriteString(yaml)
 	if err != nil {
 		return fmt.Errorf("error: Unable to write to the %s file: %v", bufGenFileName, err)
 	}
@@ -172,15 +178,51 @@ func createProtoFolder(serviceName string) error {
 	if err != nil {
 		return fmt.Errorf("error: Unable to create the %s file: %v", bufFileName, err)
 	}
-	_, err = file.WriteString(generator.GenerateYaml())
+
+	yaml, err = templating.GenerateYaml()
+	if err != nil {
+		return fmt.Errorf("error: Unable to generate the %s file: %v", bufFileName, err)
+	}
+
+	_, err = file.WriteString(yaml)
 	if err != nil {
 		return fmt.Errorf("error: Unable to write to the %s file: %v", bufFileName, err)
 	}
 	defer file.Close()
 
 	//Create 2 directories v1 and v2
-	if err = os.MkdirAll("v1/"+serviceName, 0755); err != nil {
+	if err = os.MkdirAll(fileName+"/v1", 0755); err != nil {
 		return fmt.Errorf("error: Unable to create the v1 folder: %v", err)
+	}
+
+	if err = os.Chdir(fileName + "/v1"); err != nil {
+		return fmt.Errorf("error: Unable to change directory: %v", err)
+	}
+
+	//Copy the proto file into the v1 folder
+	if err = copyFile("../../../../"+fileName+".proto", fileName+".proto"); err != nil {
+		return fmt.Errorf("error: Unable to copy the proto file: %v", err)
+	}
+
+	//Reference
+	//option go_package = "github.com/dietzy1/chatapp/services/chatroom/proto/chatroom/v1;chatroomv1";
+	optionPackage := fmt.Sprintf("option go_package = \"github.com/%s/%s/proto/%s/v1;%sv1\";", githubName, serviceName, serviceName, serviceName)
+
+	if err = insertSnippetInFile(fileName+".proto", optionPackage); err != nil {
+		return fmt.Errorf("error: Unable to insert the snippet in the proto file: %v", err)
+	}
+
+	//I need to go back to directories
+	if err = os.Chdir("../.."); err != nil {
+		return fmt.Errorf("error: Unable to change directory: %v", err)
+	}
+
+	//Here we need to generate the go files from the proto file
+	//We need to call the protoc command
+	command := exec.Command("buf", "generate")
+	_, err = command.Output()
+	if err != nil {
+		return fmt.Errorf("error: Unable to generate the go files: %v", err)
 	}
 
 	//Go back to the root folder
@@ -189,6 +231,16 @@ func createProtoFolder(serviceName string) error {
 	}
 
 	//Create
+
+	return nil
+}
+
+// Entry function for the codegen package
+func Run(serviceName, githubName, fileName string) error {
+
+	if err := createRootFolder(serviceName, githubName, fileName); err != nil {
+		return fmt.Errorf("error: Unable to create the root folder: %v", err)
+	}
 
 	return nil
 }

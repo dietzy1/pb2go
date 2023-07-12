@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/dietzy1/pb2go/codegen"
+	"github.com/dietzy1/pb2go/tui"
 )
 
 //List of issues that needs to be dealt with
@@ -32,14 +33,40 @@ func main() {
 
 }
 
+//First i need to prompt the user if its ok to install a bunch of shit
+//yes / no
+
+//Then the user should be asked what their github is
+
+//Some prompt should show up with different configurations of the program (for now we simply stick to simple 1 way)
+
+//I need to prompt the user for their github
+
 func run() error {
+
+	//Start the TUI application
+	if err := tui.Run(); err != nil {
+		return err
+	}
 
 	// Define a command-line flag for the protobuf file path
 	protoFilePath := flag.String("proto", "", "Path to the protobuf file")
+	githubName := flag.String("github", "", "Github name of the user")
+
+	//I should probaly read in the file early so I can display to the user that the project will be
+	//Generated with whatever is infront of the test.proto
+	//At the end the user should be prompted if they are satisfied with the result and that the test.proto file should be deleted.
+
+	//There is going to happen alot of code generation idk how long it is going to take so it might be
+	//good to
+
 	flag.Parse()
 
 	//Validate the extension of the file
 	if err := validate(*protoFilePath); err != nil {
+		return err
+	}
+	if err := tempValidate(*githubName); err != nil {
 		return err
 	}
 
@@ -49,15 +76,10 @@ func run() error {
 		return err
 	}
 
-	if err := codegen.CreateRootFolder(parsedProto.ServiceName, parsedProto.FileName); err != nil {
+	if err := codegen.Run(parsedProto.ServiceName, *githubName, parsedProto.FileName); err != nil {
 		return err
 	}
 
-	//Generate nessesary files
-	/* 	if err := generator.Generator(parsedProto); err != nil {
-	   		return err
-	   	}
-	*/
 	return nil
 }
 
@@ -72,6 +94,14 @@ func validate(path string) error {
 
 	if ex != ".proto" {
 		return errors.New("error: Please provide a valid protobuf file")
+	}
+
+	return nil
+}
+
+func tempValidate(github string) error {
+	if github == "" {
+		return errors.New("error: Please provide your github name using the -github flag")
 	}
 
 	return nil
