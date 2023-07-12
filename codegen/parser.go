@@ -221,8 +221,9 @@ func Parse(path string) (Service, error) {
 	}
 
 	//print the json
-	fmt.Println(string(serviceJSON))
+	//fmt.Println(string(serviceJSON))
 
+	_ = serviceJSON
 	return service, nil
 }
 

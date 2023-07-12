@@ -157,7 +157,7 @@ func createProtoFolder(fileName, githubName, serviceName string) error {
 	//Call generator functions to create the 2 yaml files
 
 	//Create file for the buf.gen.yaml
-	file, err := os.Create("buf.gen.yaml")
+	file, err := os.Create(bufGenFileName)
 	if err != nil {
 		return fmt.Errorf("error: Unable to create the %s file: %v", bufGenFileName, err)
 	}
@@ -174,7 +174,7 @@ func createProtoFolder(fileName, githubName, serviceName string) error {
 	file.Close()
 
 	//Create file for the buf.yaml
-	file, err = os.Create("buf.yaml")
+	file, err = os.Create(bufFileName)
 	if err != nil {
 		return fmt.Errorf("error: Unable to create the %s file: %v", bufFileName, err)
 	}
@@ -206,7 +206,7 @@ func createProtoFolder(fileName, githubName, serviceName string) error {
 
 	//Reference
 	//option go_package = "github.com/dietzy1/chatapp/services/chatroom/proto/chatroom/v1;chatroomv1";
-	optionPackage := fmt.Sprintf("option go_package = \"github.com/%s/%s/proto/%s/v1;%sv1\";", githubName, serviceName, serviceName, serviceName)
+	optionPackage := fmt.Sprintf("option go_package = \"github.com/%s/%s/proto/%s/v1;%sv1\";", githubName, fileName, fileName, fileName)
 
 	if err = insertSnippetInFile(fileName+".proto", optionPackage); err != nil {
 		return fmt.Errorf("error: Unable to insert the snippet in the proto file: %v", err)
@@ -240,6 +240,10 @@ func Run(serviceName, githubName, fileName string) error {
 
 	if err := createRootFolder(serviceName, githubName, fileName); err != nil {
 		return fmt.Errorf("error: Unable to create the root folder: %v", err)
+	}
+
+	if err := goModInit(githubName, serviceName); err != nil {
+		return fmt.Errorf("error: Unable to create the go.mod file: %v", err)
 	}
 
 	return nil
