@@ -1,18 +1,41 @@
 package templating
 
 import (
-	"strings"
+	"fmt"
+	"html/template"
+	"io"
 )
 
-func GenerateStruct() string {
+type StructData struct {
+	StructName string
+	Fields     []FieldData
+}
 
-	var sb strings.Builder
+type FieldData struct {
+	Name string
+	Type string
+}
 
-	/* sb.WriteString(fmt.Sprintf("type %s struct {\n", input.ProtoBody[0].Name))
-	for _, method := range input.ProtoBody[0].ServiceBody[0].RPCName {
-		sb.WriteString(fmt.Sprintf("\t%s\n", method))
+func GenerateStruct(w io.Writer, data StructData) error {
+
+	tmplString := `
+type {{.StructName}} struct {
+{{- range .Fields}}
+	{{.Name}} {{.Type}}
+{{- end}}
+}
+`
+
+	tmpl, err := template.New("struct").Parse(tmplString)
+	if err != nil {
+		return err
 	}
-	sb.WriteString("}") */
 
-	return sb.String()
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Struct generated successfully.")
+	return nil
 }

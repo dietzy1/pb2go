@@ -2,30 +2,41 @@ package templating
 
 import (
 	"fmt"
-	"strings"
+	"html/template"
+	"io"
 )
 
-func GenerateInterface(name string, methods []Method) string {
-	var sb strings.Builder
-
-	sb.WriteString(fmt.Sprintf("type %s interface {\n", name))
-	for _, method := range methods {
-		sb.WriteString(fmt.Sprintf("\t%s\n", method))
-	}
-	sb.WriteString("}")
-
-	return sb.String()
+type InterfaceData struct {
+	InterfaceName string
+	Methods       []MethodData
 }
 
-// Method represents a method definition.
-type Method struct {
+type MethodData struct {
 	Name       string
-	Parameters []Parameter
+	Params     string
 	ReturnType string
 }
 
-// Parameter represents a parameter definition.
-type Parameter struct {
-	Name string
-	Type string
+func GenerateInterface(w io.Writer, data InterfaceData) error {
+
+	tmplString := `
+type {{.InterfaceName}} interface {
+{{- range .Methods}}
+	{{.Name}}({{.Params}}) {{.ReturnType}}
+	{{- end}}
+}
+`
+
+	tmpl, err := template.New("interface").Parse(tmplString)
+	if err != nil {
+		return err
+	}
+
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Interface generated successfully.")
+	return nil
 }

@@ -6,8 +6,10 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/dietzy1/pb2go/codegen"
+	"github.com/dietzy1/pb2go/templating"
 	"github.com/dietzy1/pb2go/tui"
 )
 
@@ -27,9 +29,13 @@ import (
 //SQL layer // should be generated
 
 func main() {
+
+	start := time.Now()
 	if err := run(); err != nil {
 		log.Fatal(err)
 	}
+	elapsed := time.Since(start)
+	log.Printf("It took: %s to generate the project", elapsed)
 
 }
 
@@ -76,9 +82,37 @@ func run() error {
 		return err
 	}
 
-	if err := codegen.Run(parsedProto.ServiceName, *githubName, parsedProto.FileName); err != nil {
+	/* 	input := templating.InterfaceData{
+	   		InterfaceName: "TestInterface",
+	   		Methods: []templating.MethodData{
+	   			{
+	   				Name:       "TestMethod",
+	   				Params:     "input string",
+	   				ReturnType: "string",
+	   			},
+	   			{
+	   				Name:       "TestMethod2",
+	   				Params:     "input string2",
+	   				ReturnType: "string2",
+	   			},
+	   		},
+	   	}
+
+	   	file, err := os.Create("generated_interface.go")
+	   	if err != nil {
+	   		return err
+	   	} */
+
+	//Call in templating writer functions here
+	if err := templating.GenerateInterface(file, input); err != nil {
 		return err
 	}
+
+	_ = parsedProto
+
+	/* if err := codegen.Run(parsedProto.ServiceName, *githubName, parsedProto.FileName); err != nil {
+		return err
+	} */
 
 	return nil
 }
