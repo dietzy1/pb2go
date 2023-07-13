@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/dietzy1/pb2go/templating"
+	"github.com/dietzy1/pb2go/templates"
 )
 
 //The field serviceName should be used to generate the file names for the generated code
@@ -163,15 +163,15 @@ func createProtoFolder(fileName, githubName, serviceName string) error {
 		return fmt.Errorf("error: Unable to create the %s file: %v", bufGenFileName, err)
 	}
 
-	yaml, err := templating.GenerateGenYaml()
+	err = templates.GenerateGenYaml(file)
 	if err != nil {
 		return fmt.Errorf("error: Unable to generate the %s file: %v", bufGenFileName, err)
 	}
 
-	_, err = file.WriteString(yaml)
-	if err != nil {
-		return fmt.Errorf("error: Unable to write to the %s file: %v", bufGenFileName, err)
-	}
+	/* 	_, err = file.WriteString(yaml)
+	   	if err != nil {
+	   		return fmt.Errorf("error: Unable to write to the %s file: %v", bufGenFileName, err)
+	   	} */
 	file.Close()
 
 	//Create file for the buf.yaml
@@ -180,15 +180,15 @@ func createProtoFolder(fileName, githubName, serviceName string) error {
 		return fmt.Errorf("error: Unable to create the %s file: %v", bufFileName, err)
 	}
 
-	yaml, err = templating.GenerateYaml()
+	err = templates.GenerateYaml(file)
 	if err != nil {
 		return fmt.Errorf("error: Unable to generate the %s file: %v", bufFileName, err)
 	}
 
-	_, err = file.WriteString(yaml)
+	/* _, err = file.WriteString(yaml)
 	if err != nil {
 		return fmt.Errorf("error: Unable to write to the %s file: %v", bufFileName, err)
-	}
+	} */
 	defer file.Close()
 
 	//Create 2 directories v1 and v2
@@ -232,6 +232,8 @@ func createProtoFolder(fileName, githubName, serviceName string) error {
 	}
 
 	//Create
+
+	//templating.GenerateDomain()
 
 	return nil
 }
