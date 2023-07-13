@@ -4,13 +4,12 @@ import (
 	"errors"
 	"flag"
 	"log"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/dietzy1/pb2go/codegen"
-	"github.com/dietzy1/pb2go/templating"
+
 	"github.com/dietzy1/pb2go/tui"
 )
 
@@ -83,60 +82,60 @@ func run() error {
 		return err
 	}
 
-	input := templating.InterfaceData{
-		InterfaceName: "TestInterface",
-		Methods: []templating.MethodData{
-			{
-				Name:       "TestMethod",
-				Params:     "input string",
-				ReturnType: "string",
-			},
-			{
-				Name:       "TestMethod2",
-				Params:     "input string2",
-				ReturnType: "string2",
-			},
-		},
-	}
+	/* 	input := templating.InterfaceData{
+	   		InterfaceName: "TestInterface",
+	   		Methods: []templating.MethodData{
+	   			{
+	   				Name:       "TestMethod",
+	   				Params:     "input string",
+	   				ReturnType: "string",
+	   			},
+	   			{
+	   				Name:       "TestMethod2",
+	   				Params:     "input string2",
+	   				ReturnType: "string2",
+	   			},
+	   		},
+	   	}
 
-	input2 := templating.StructData{
-		StructName: "TestStruct",
-		Fields: []templating.FieldData{
-			{
-				Name: "TestField",
-				Type: "string",
-			},
-			{
-				Name: "TestField2",
-				Type: "string2",
-			},
-		},
-	}
+	   	input2 := templating.StructData{
+	   		StructName: "TestStruct",
+	   		Fields: []templating.FieldData{
+	   			{
+	   				Name: "TestField",
+	   				Type: "string",
+	   			},
+	   			{
+	   				Name: "TestField2",
+	   				Type: "string2",
+	   			},
+	   		},
+	   	}
 
-	input3 := templating.MethodData{
-		TypeName:   "TestStruct",
-		Name:       "TestMethod",
-		Params:     "input string",
-		ReturnType: "string",
-	}
+	   	input3 := templating.MethodData{
+	   		TypeName:   "TestStruct",
+	   		Name:       "TestMethod",
+	   		Params:     "input string",
+	   		ReturnType: "string",
+	   	}
 
-	output := templating.GenerateInterface(input)
-	output2 := templating.GenerateStruct(input2)
-	output3 := templating.GenerateMethod(input3)
+	   	output := templating.GenerateInterface(input)
+	   	output2 := templating.GenerateStruct(input2)
+	   	output3 := templating.GenerateMethod(input3)
 
-	input4 := templating.BuilderData{
-		PackageName: "test",
-		Imports: []string{
-			"github.com/dietzy1/pb2go/templating",
-			"github.com/dietzy1/pb2go/codegen",
-			"github.com/dietzy1/pb2go/tui",
-		},
-		Templates: []string{output, output2, output3},
-	}
+	   	input4 := templating.BuilderData{
+	   		PackageName: "test",
+	   		Imports: []string{
+	   			"github.com/dietzy1/pb2go/templating",
+	   			"github.com/dietzy1/pb2go/codegen",
+	   			"github.com/dietzy1/pb2go/tui",
+	   		},
+	   		Templates: []string{output, output2, output3},
+	   	} */
 
-	if err := templating.GenerateFile(os.Stdout, input4); err != nil {
+	/* 	if err := templating.GenerateFile(os.Stdout, input4); err != nil {
 		return err
-	}
+	} */
 
 	/* if err := templating.GenerateFile(file, realInput); err != nil {
 		return err
@@ -144,9 +143,9 @@ func run() error {
 
 	_ = parsedProto
 
-	/* if err := codegen.Run(parsedProto.ServiceName, *githubName, parsedProto.FileName); err != nil {
+	if err := codegen.Run(parsedProto.ServiceName, *githubName, parsedProto.FileName); err != nil {
 		return err
-	} */
+	}
 
 	return nil
 }
