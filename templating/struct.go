@@ -1,9 +1,9 @@
 package templating
 
 import (
-	"fmt"
 	"html/template"
-	"io"
+	"log"
+	"strings"
 )
 
 type StructData struct {
@@ -16,7 +16,7 @@ type FieldData struct {
 	Type string
 }
 
-func GenerateStruct(w io.Writer, data StructData) error {
+func GenerateStruct(data StructData) string {
 
 	tmplString := `
 type {{.StructName}} struct {
@@ -28,14 +28,13 @@ type {{.StructName}} struct {
 
 	tmpl, err := template.New("struct").Parse(tmplString)
 	if err != nil {
-		return err
+		log.Fatalf("Error while parsing template: %v", err)
 	}
-
-	err = tmpl.Execute(w, data)
+	var builder strings.Builder
+	err = tmpl.Execute(&builder, data)
 	if err != nil {
-		return err
+		log.Fatalf("Error while executing template: %v", err)
 	}
 
-	fmt.Println("Struct generated successfully.")
-	return nil
+	return builder.String()
 }

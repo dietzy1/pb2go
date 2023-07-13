@@ -48,6 +48,7 @@ const (
 )
 
 func createRootFolder(serviceName, githubName, fileName string) error {
+
 	err := os.Mkdir(serviceName, 0755)
 	if err != nil {
 		return fmt.Errorf("error: Unable to create the root folder: %v", err)

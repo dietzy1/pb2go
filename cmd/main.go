@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -82,31 +83,64 @@ func run() error {
 		return err
 	}
 
-	/* 	input := templating.InterfaceData{
-	   		InterfaceName: "TestInterface",
-	   		Methods: []templating.MethodData{
-	   			{
-	   				Name:       "TestMethod",
-	   				Params:     "input string",
-	   				ReturnType: "string",
-	   			},
-	   			{
-	   				Name:       "TestMethod2",
-	   				Params:     "input string2",
-	   				ReturnType: "string2",
-	   			},
-	   		},
-	   	}
+	input := templating.InterfaceData{
+		InterfaceName: "TestInterface",
+		Methods: []templating.MethodData{
+			{
+				Name:       "TestMethod",
+				Params:     "input string",
+				ReturnType: "string",
+			},
+			{
+				Name:       "TestMethod2",
+				Params:     "input string2",
+				ReturnType: "string2",
+			},
+		},
+	}
 
-	   	file, err := os.Create("generated_interface.go")
-	   	if err != nil {
-	   		return err
-	   	} */
+	input2 := templating.StructData{
+		StructName: "TestStruct",
+		Fields: []templating.FieldData{
+			{
+				Name: "TestField",
+				Type: "string",
+			},
+			{
+				Name: "TestField2",
+				Type: "string2",
+			},
+		},
+	}
 
-	//Call in templating writer functions here
-	if err := templating.GenerateInterface(file, input); err != nil {
+	input3 := templating.MethodData{
+		TypeName:   "TestStruct",
+		Name:       "TestMethod",
+		Params:     "input string",
+		ReturnType: "string",
+	}
+
+	output := templating.GenerateInterface(input)
+	output2 := templating.GenerateStruct(input2)
+	output3 := templating.GenerateMethod(input3)
+
+	input4 := templating.BuilderData{
+		PackageName: "test",
+		Imports: []string{
+			"github.com/dietzy1/pb2go/templating",
+			"github.com/dietzy1/pb2go/codegen",
+			"github.com/dietzy1/pb2go/tui",
+		},
+		Templates: []string{output, output2, output3},
+	}
+
+	if err := templating.GenerateFile(os.Stdout, input4); err != nil {
 		return err
 	}
+
+	/* if err := templating.GenerateFile(file, realInput); err != nil {
+		return err
+	}  */
 
 	_ = parsedProto
 

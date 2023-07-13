@@ -6,21 +6,23 @@ import (
 	"strings"
 )
 
-type InterfaceData struct {
-	InterfaceName string
-	Methods       []MethodData
+type MethodData struct {
+	TypeName   string
+	Name       string
+	Params     string
+	ReturnType string
 }
 
-func GenerateInterface(data InterfaceData) string {
-
+func GenerateMethod(data MethodData) string {
 	tmplString := `
-type {{.InterfaceName}} interface {
-{{- range .Methods}}
-	{{.Name}}({{.Params}}) {{.ReturnType}}
-	{{- end}}
+
+func (t *{{.TypeName}}) {{.Name}}({{.Params}}) {{.ReturnType}} {
+	// Method implementation goes here
 }
+
 `
-	tmpl, err := template.New("interface").Parse(tmplString)
+
+	tmpl, err := template.New("file").Parse(tmplString)
 	if err != nil {
 		log.Fatalf("Error while parsing template: %v", err)
 	}
