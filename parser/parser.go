@@ -182,29 +182,29 @@ func Parse(path string) (Service, error) {
 	// We need to loop over the field servicebody to determine the amount of RPCs
 	for _, v := range testProto.ProtoBody[1].ServiceBody {
 		service.Rpc = append(service.Rpc, Rpc{
-			RpcName:         v.RPCName,
-			Request:         v.RPCRequest.MessageType,
-			Response:        v.RPCResponse.MessageType,
-			RequestMessage:  []Message{},
-			ResponseMessage: []Message{},
+			RpcName:        v.RPCName,
+			RequestName:    v.RPCRequest.MessageType,
+			ResponseName:   v.RPCResponse.MessageType,
+			RequestFields:  []Field{},
+			ResponseFields: []Field{},
 		})
 	}
 
 	//Loop over protoBody to map the request and response messages to the RPCs
 	for _, v := range testProto.ProtoBody {
 		for i, rpc := range service.Rpc {
-			if rpc.Request == v.MessageName {
+			if rpc.RequestName == v.MessageName {
 				for _, message := range v.MessageBody {
-					service.Rpc[i].RequestMessage = append(service.Rpc[i].RequestMessage, Message{
+					service.Rpc[i].RequestFields = append(service.Rpc[i].RequestFields, Field{
 						IsRepeated: message.IsRepeated,
 						FieldName:  message.FieldName,
 						Type:       message.Type,
 					})
 				}
 			}
-			if rpc.Response == v.MessageName {
+			if rpc.RequestName == v.MessageName {
 				for _, message := range v.MessageBody {
-					service.Rpc[i].ResponseMessage = append(service.Rpc[i].ResponseMessage, Message{
+					service.Rpc[i].ResponseFields = append(service.Rpc[i].ResponseFields, Field{
 						IsRepeated: message.IsRepeated,
 						FieldName:  message.FieldName,
 						Type:       message.Type,
@@ -221,27 +221,27 @@ func Parse(path string) (Service, error) {
 	}
 
 	//print the json
-	//fmt.Println(string(serviceJSON))
+	fmt.Println(string(serviceJSON))
 
-	_ = serviceJSON
 	return service, nil
 }
 
 type Service struct {
 	ServiceName string `json:"ServiceName"`
 	FileName    string `json:"FileName"`
+	GithubName  string `json:"GithubName"`
 	Rpc         []Rpc  `json:"Rpc"`
 }
 
 type Rpc struct {
-	RpcName         string    `json:"RpcName"`
-	RequestMessage  []Message `json:"RequestMessage"`
-	ResponseMessage []Message `json:"ResponseMessage"`
-	Request         string    `json:"Request"`
-	Response        string    `json:"Response"`
+	RpcName        string  `json:"RpcName"`
+	RequestName    string  `json:"RequestName"`
+	ResponseName   string  `json:"ResponseName"`
+	RequestFields  []Field `json:"RequestFields"`
+	ResponseFields []Field `json:"ResponseFields"`
 }
 
-type Message struct {
+type Field struct {
 	IsRepeated bool   `json:"IsRepeated"`
 	FieldName  string `json:"FieldName"`
 	Type       string `json:"Type"`
