@@ -3,7 +3,7 @@ package codegen
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
+
 	"os"
 	"strings"
 )
@@ -31,7 +31,7 @@ func copyFile(sourcePath, destinationPath string) error {
 
 func insertSnippetInFile(filePath string, snippet string) error {
 	// Read the Proto file
-	protoFile, err := ioutil.ReadFile(filePath)
+	protoFile, err := os.ReadFile(filePath)
 	if err != nil {
 		return fmt.Errorf("error: Unable to read the Proto file: %v", err)
 	}
@@ -51,7 +51,7 @@ func insertSnippetInFile(filePath string, snippet string) error {
 	updatedProtoContent := protoContent[:insertIndex] + snippet + "\n" + protoContent[insertIndex:]
 
 	// Write the updated content back to the Proto file
-	err = ioutil.WriteFile(filePath, []byte(updatedProtoContent), 0644)
+	err = os.WriteFile(filePath, []byte(updatedProtoContent), 0644)
 	if err != nil {
 		return fmt.Errorf("error: Unable to write to the Proto file: %v", err)
 	}
