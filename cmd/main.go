@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dietzy1/pb2go/codegen"
+	"github.com/dietzy1/pb2go/parser"
 
 	"github.com/dietzy1/pb2go/tui"
 )
@@ -77,71 +78,12 @@ func run() error {
 	}
 
 	// Process the protobuf file
-	parsedProto, err := codegen.Parse(*protoFilePath)
+	parsedProto, err := parser.Parse(*protoFilePath)
 	if err != nil {
 		return err
 	}
 
-	/* 	input := templating.InterfaceData{
-	   		InterfaceName: "TestInterface",
-	   		Methods: []templating.MethodData{
-	   			{
-	   				Name:       "TestMethod",
-	   				Params:     "input string",
-	   				ReturnType: "string",
-	   			},
-	   			{
-	   				Name:       "TestMethod2",
-	   				Params:     "input string2",
-	   				ReturnType: "string2",
-	   			},
-	   		},
-	   	}
-
-	   	input2 := templating.StructData{
-	   		StructName: "TestStruct",
-	   		Fields: []templating.FieldData{
-	   			{
-	   				Name: "TestField",
-	   				Type: "string",
-	   			},
-	   			{
-	   				Name: "TestField2",
-	   				Type: "string2",
-	   			},
-	   		},
-	   	}
-
-	   	input3 := templating.MethodData{
-	   		TypeName:   "TestStruct",
-	   		Name:       "TestMethod",
-	   		Params:     "input string",
-	   		ReturnType: "string",
-	   	}
-
-	   	output := templating.GenerateInterface(input)
-	   	output2 := templating.GenerateStruct(input2)
-	   	output3 := templating.GenerateMethod(input3)
-
-	   	input4 := templating.BuilderData{
-	   		PackageName: "test",
-	   		Imports: []string{
-	   			"github.com/dietzy1/pb2go/templating",
-	   			"github.com/dietzy1/pb2go/codegen",
-	   			"github.com/dietzy1/pb2go/tui",
-	   		},
-	   		Templates: []string{output, output2, output3},
-	   	} */
-
-	/* 	if err := templating.GenerateFile(os.Stdout, input4); err != nil {
-		return err
-	} */
-
-	/* if err := templating.GenerateFile(file, realInput); err != nil {
-		return err
-	}  */
-
-	_ = parsedProto
+	parsedProto.GithubName = *githubName
 
 	if err := codegen.Run(parsedProto.ServiceName, *githubName, parsedProto.FileName); err != nil {
 		return err
