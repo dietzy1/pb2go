@@ -8,40 +8,11 @@ import (
 	"github.com/dietzy1/pb2go/templates"
 )
 
-//The field serviceName should be used to generate the file names for the generated code
-
-//this file is responsible for creating the structure of the project
-
-//Root folder should be called the name of the service
-
-//Adapers folder
-// -- server
-// ....server.go
-// ....handlers.go
-// ....handlers_test.go
-// ....middleware.go
-
-// -- repository
-//.... repository.go
-//.... serviceName.go
-
-//Domain folder
-//-- validation
-//....validation.go
-//....validation_test.go
-//.... domain.go
-
-//Proto folder
-// --servicename
-//....servicename.proto
-//buf.yaml
-//buf.gen.yaml
-
 const (
-	serverFolderName     = "server"
-	repositoryFolderName = "repository"
-	domainFolderName     = "domain"
-	protoFolderName      = "proto"
+	serverFolderName = "server"
+	dataStoreName    = "datastore"
+	domainFolderName = "domain"
+	protoFolderName  = "proto"
 
 	bufFileName    = "buf.yaml"
 	bufGenFileName = "buf.gen.yaml"
@@ -65,8 +36,8 @@ func createRootFolder(serviceName, githubName, fileName string) error {
 	}
 
 	//Create the repository folder
-	if err = createRepositoryFolder(); err != nil {
-		return fmt.Errorf("error: Unable to create the %s folder: %v", repositoryFolderName, err)
+	if err = createDatastoreFolder(); err != nil {
+		return fmt.Errorf("error: Unable to create the %s folder: %v", dataStoreName, err)
 	}
 
 	//Create the domain folder
@@ -103,14 +74,14 @@ func createServerFolder() error {
 	return nil
 }
 
-func createRepositoryFolder() error {
+func createDatastoreFolder() error {
 
-	if err := os.Mkdir(repositoryFolderName, 0755); err != nil {
-		return fmt.Errorf("error: Unable to create the %s folder: %v", repositoryFolderName, err)
+	if err := os.Mkdir(dataStoreName, 0755); err != nil {
+		return fmt.Errorf("error: Unable to create the %s folder: %v", dataStoreName, err)
 	}
 
 	//Go into the repository folder
-	if err := os.Chdir(repositoryFolderName); err != nil {
+	if err := os.Chdir(dataStoreName); err != nil {
 		return fmt.Errorf("error: Unable to change directory: %v", err)
 	}
 
@@ -239,7 +210,7 @@ func createProtoFolder(fileName, githubName, serviceName string) error {
 }
 
 // Entry function for the codegen package
-func Run(serviceName, githubName, fileName string) error {
+func Run1(serviceName, githubName, fileName string) error {
 
 	if err := createRootFolder(serviceName, githubName, fileName); err != nil {
 		return fmt.Errorf("error: Unable to create the root folder: %v", err)

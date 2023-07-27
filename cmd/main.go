@@ -85,9 +85,12 @@ func run() error {
 
 	parsedProto.GithubName = *githubName
 
-	if err := codegen.Run(parsedProto.ServiceName, *githubName, parsedProto.FileName); err != nil {
+	if err := codegen.Run(parsedProto); err != nil {
 		return err
 	}
+	/* if err := codegen.Run(parsedProto.ServiceName, *githubName, parsedProto.FileName); err != nil {
+		return err
+	} */
 
 	return nil
 }
