@@ -1,0 +1,54 @@
+package main
+
+import (
+	"os"
+	"os/signal"
+	"syscall"
+
+	"go.uber.org/zap"
+
+	"github.com/{{.GithubName}}/{{.ServiceName}}/datastore"
+	"github.com/{{.GithubName}}/{{.ServiceName}}/domain"
+	"github.com/{{.GithubName}}/{{.ServiceName}}/server"
+)
+
+func main() {
+	logger, err := zap.NewProduction()
+	if err != nil {
+		logger.Fatal("failed to initialize logger", zap.Error(err))
+	}
+
+	store, err := datastore.New()
+	if err != nil {
+		// Handle datastore initialization error
+		logger.Fatal("failed to initialize datastore", zap.Error(err))
+	}
+
+	domain := domain.New(store)
+
+	config := &server.Config{
+		// Set your server configuration here
+		Addr:   ":9000",
+		Logger: logger,
+	}
+
+	s := server.New(config, domain)
+
+	// Start the gRPC server in a separate goroutine
+	go func() {
+		if err := s.ListenAndServe(); err != nil {
+			// Handle gRPC server start error
+			logger.Fatal("failed to start server", zap.Error(err))
+		}
+	}()
+
+	// Wait for the termination signal
+	stopChan := make(chan os.Signal, 1)
+	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
+	<-stopChan
+
+	// Start the graceful shutdown
+	s.Stop()
+	logger.Info("Application gracefully stopped")
+	os.Exit(0)
+}
