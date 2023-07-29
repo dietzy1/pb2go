@@ -1,1 +1,23 @@
-nice
+package domain
+
+import (
+	"errors"
+	"strings"
+	"context"
+
+    pb "github.com/{{.GithubName}}/{{.ServiceName}}/proto/{{.ServiceName}}/v1"
+
+
+
+)
+
+	{{range .Rpc}}
+func validate{{.RpcName}}(ctx context.Context, req *pb.TestRequest1) error {
+	var builder strings.Builder
+
+	if builder.Len() > 0 {
+		return errors.New(builder.String())
+	}
+	return nil
+}
+{{end}}

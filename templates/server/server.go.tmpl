@@ -3,33 +3,60 @@ package server
 
 import (
 
+"io"
+"net"
+"os"
+
+"go.uber.org/zap"
+"google.golang.org/grpc"
+"google.golang.org/grpc/grpclog"
+
 pb "github.com/{{.GithubName}}/{{.ServiceName}}/proto/{{.ServiceName}}/v1"
 
 )
 
-
 type server struct {
-pb.Unimplemented{{.ServiceName}}Server
+	pb.Unimplemented{{.ServiceName}}Server
+	grpc *grpc.Server
 
-logger *zap.Logger
+	logger *zap.Logger
+	config *Config
 
+	//Domain interface
+	tester test
 }
 
-type config struct {
-addr string
-RequestTimeout    time.Duration
-	ReadTimeout       time.Duration
-	ReadHeaderTimeout time.Duration
-	WriteTimeout      time.Duration
-	IdleTimeout       time.Duration
-	GracefulTimeout   time.Duration
-	HealthCheckFunc   func() bool
-
-
+type Config struct {
+	Addr   string
+	Logger *zap.Logger
 }
 
-func New() *server {
-    return &server{}
+func New(c *Config, tester test) *server {
+
+	if c.Addr == "" {
+		c.Addr = ":9000"
+		c.Logger.Info("No port specified, defaulting to 9000")
+	}
+
+	//Unsure if this is even supposed to be here honestly
+	log := grpclog.NewLoggerV2(os.Stdout, io.Discard, io.Discard)
+	grpclog.SetLoggerV2(log)
+
+	//Create new GRPC server object
+	grpc := grpc.NewServer(
+		grpc.UnaryInterceptor(loggingMiddleware(c.Logger)),
+	)
+
+	s := &server{
+		grpc:   grpc,
+		logger: c.Logger,
+		config: c,
+		tester: tester,
+	}
+
+	//Register the server object methods with the GRPC server
+	pb.Register{{.ServiceName}}Server(grpc, s)
+
+	return s
 }
 
-func 

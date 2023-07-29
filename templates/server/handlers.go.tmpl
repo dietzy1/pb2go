@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/{{.GithubName}}/{{.ServiceName}}/server"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	pb "github.com/{{.GithubName}}/{{.ServiceName}}/proto/{{.ServiceName}}/v1"
@@ -12,8 +13,9 @@ import (
 
 type {{.FileName}}Server interface {
 	{{range .Rpc}}
-	{{.RpcName}}(context.Context, domain.{{.FileName}}, domain.{{.FileName}} error)
+	{{.RpcName}}(context.Context, domain.{{$.FileName}}, domain.{{$.FileName}}) error
 	{{end}}
+}
 
 
 	{{range .Rpc}}

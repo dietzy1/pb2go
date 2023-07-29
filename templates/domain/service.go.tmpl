@@ -1,1 +1,28 @@
-hello
+
+package domain
+
+import (
+	"context"
+
+    pb "github.com/{{.GithubName}}/{{.ServiceName}}/proto/{{.ServiceName}}/v1"
+)
+
+
+{{range .Rpc}}
+func (d *domain) {{.RpcName}}(ctx context.Context, req *pb.{{.RequestName}}) (*pb.{{.ResponseName}}, error) {
+	// Implementation goes here...
+
+    //Validate request
+    if err := validate{{.RequestName}}(ctx, req); err != nil {
+        return nil, err
+    }
+
+	res, err := d.store.{{.RpcName}}(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+
+	return res, nil
+}
+{{end}}

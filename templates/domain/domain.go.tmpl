@@ -1,1 +1,27 @@
-okokok
+package domain
+
+import (
+	"context"
+
+    pb "github.com/{{.GithubName}}/{{.ServiceName}}/proto/{{.ServiceName}}/v1"
+)
+
+
+
+
+type dataStore interface {
+	{{range .Rpc}}
+	{{.RequestName}}(context.Context, *pb.{{.RequestName}}) (*pb.{{.ResponseName}}, error)
+    {{end}}
+}
+
+type domain struct {
+	store dataStore
+}
+
+func New(store dataStore) *domain {
+	return &domain{
+		store: store,
+	}
+}
+
