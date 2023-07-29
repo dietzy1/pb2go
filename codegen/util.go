@@ -9,15 +9,16 @@ import (
 )
 
 func copyFile(sourcePath, destinationPath string) error {
+
 	sourceFile, err := os.Open(sourcePath)
 	if err != nil {
-		return err
+		return fmt.Errorf("error: Unable to open the source file: %v", err)
 	}
 	defer sourceFile.Close()
 
 	destinationFile, err := os.Create(destinationPath)
 	if err != nil {
-		return err
+		return fmt.Errorf("error: Unable to create the destination file: %v", err)
 	}
 	defer destinationFile.Close()
 
