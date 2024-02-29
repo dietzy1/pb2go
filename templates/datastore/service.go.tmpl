@@ -1,0 +1,14 @@
+package datastore
+
+import (
+	"context"
+
+    pb "github.com/{{.GithubName}}/{{.ServiceName}}/datastore"
+)
+
+{{range .Rpc}}
+func (d *dataStore) {{.RpcName}}(ctx context.Context, req *pb.{{.RequestName}}) (*pb.{{.ResponseName}}, error) {
+	// Implementation goes here...
+
+}
+{{end}}

@@ -3,15 +3,15 @@ package domain
 import (
 	"context"
 
+
+
+
     pb "github.com/{{.GithubName}}/{{.ServiceName}}/proto/{{.ServiceName}}/v1"
 )
 
-
-
-
 type dataStore interface {
 	{{range .Rpc}}
-	{{.RequestName}}(context.Context, *pb.{{.RequestName}}) (*pb.{{.ResponseName}}, error)
+	{{.RpcName}}(ctx context.Context, req *pb.{{.RequestName}}) (*pb.{{.ResponseName}}, error)
     {{end}}
 }
 

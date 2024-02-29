@@ -23,7 +23,7 @@ type server struct {
 	config *Config
 
 	//Domain interface
-	tester test
+	domain domain
 }
 
 type Config struct {
@@ -31,7 +31,7 @@ type Config struct {
 	Logger *zap.Logger
 }
 
-func New(c *Config, tester test) *server {
+func New(c *Config, domain domain) *server {
 
 	if c.Addr == "" {
 		c.Addr = ":9000"
@@ -51,12 +51,35 @@ func New(c *Config, tester test) *server {
 		grpc:   grpc,
 		logger: c.Logger,
 		config: c,
-		tester: tester,
+		domain: domain,
 	}
 
 	//Register the server object methods with the GRPC server
 	pb.Register{{.ServiceName}}Server(grpc, s)
 
 	return s
+}
+
+func (s *server) ListenAndServe() error {
+
+	lis, err := net.Listen("tcp", s.config.Addr)
+	if err != nil {
+		s.logger.Error("Failed to listen:", zap.Error(err))
+		return err
+	}
+
+	s.logger.Info("Serving gRPC on http://", zap.String("addr", s.config.Addr))
+
+	if err := s.grpc.Serve(lis); err != nil {
+		s.logger.Error("Failed to serve:", zap.Error(err))
+		return err
+	}
+
+	return nil
+}
+
+func (s *server) Stop() {
+	s.grpc.GracefulStop()
+	s.logger.Info("gRPC server stopped gracefully")
 }
 

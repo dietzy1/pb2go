@@ -1,21 +1,23 @@
-package domain
+package datastore
 
 import (
 	"context"
 
-    pb "github.com/{{.GithubName}}/{{.ServiceName}}/proto/{{.ServiceName}}/v1"
+    pb "github.com/{{.GithubName}}/{{.ServiceName}}/datastore"
 )
 
-
-
-
 type dataStore struct {
-	
+	//Add your database client here...
+
 }
 
-func New(store storer) *dataStore {
+func New() (*dataStore, error) {
+
+//Create your database connection here...
+
+
 	return &dataStore{
-		
-	}
+		//
+	}, nil
 }
 

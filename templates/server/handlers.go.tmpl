@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 
-	"github.com/{{.GithubName}}/{{.ServiceName}}/server"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -11,9 +10,9 @@ import (
 
 )
 
-type {{.FileName}}Server interface {
+type domain interface {
 	{{range .Rpc}}
-	{{.RpcName}}(context.Context, domain.{{$.FileName}}, domain.{{$.FileName}}) error
+	{{.RpcName}}(ctx context.Context, req *pb.{{.RequestName}}) (*pb.{{.ResponseName}}, error)
 	{{end}}
 }
 
@@ -22,24 +21,12 @@ type {{.FileName}}Server interface {
 func (s *server) {{.RpcName}}(ctx context.Context, req *pb.{{.RequestName}}) (*pb.{{.ResponseName}}, error) {
 	// Implementation goes here...
 
-	input := domain.{{$.FileName}}{
-		// Map request fields to domain fields
-		{{range .RequestFields}}
-		{{.FieldName}}: req.{{.FieldName}},
-		{{end}}
-	}
-
-	res, err := s.{{$.FileName}}.{{.RpcName}}(ctx, input)
+	res, err := s.domain.{{.RpcName}}(ctx, req)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 
-	return &{{.ResponseName}}{
-		// Map response fields to proto fields
-		{{range .ResponseFields}}
-		{{.FieldName}}: res.{{.FieldName}},
-		{{end}}
-	}, nil
-}
+	return res, nil
+	}
 {{end}}
